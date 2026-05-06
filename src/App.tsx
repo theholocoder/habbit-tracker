@@ -16,21 +16,16 @@ export default function App() {
     }
 
     function toggleHabbit(id: string, date: Date) {
-        setHabbits(habbits => {
-            const habbit = habbits.find(habbit => habbit.id === id);
-            if (!habbit) {
-                return habbits;
+        setHabbits(habbits => habbits.map(habbit => {
+            if (habbit.id !== id) {
+                return habbit;
             }
 
-            const completions = [...habbit.completions];
-            if (completions.some(d => isSameDay(d, date))) {
-                completions.splice(completions.indexOf(date), 1);
-            } else {
-                completions.push(date);
-            }
+            const completed = habbit.completions.some(d => isSameDay(d, date));
+            const completions = completed ? [...habbit.completions.filter(d => !isSameDay(d, date))] : [...habbit.completions, date];
 
-            return habbits.map(habbit => habbit.id === id ? { ...habbit, completions } : habbit);
-        });
+            return { ...habbit, completions };
+        }));
     }
 
     return <div className="max-w-2xl mx-auto p-4 flex flex-col gap-4">
