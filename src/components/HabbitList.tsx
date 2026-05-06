@@ -1,11 +1,18 @@
-import { eachDayOfInterval, endOfWeek, format, isFuture, startOfWeek } from "date-fns";
+import { eachDayOfInterval, endOfWeek, format, isFuture, isSameDay, startOfWeek } from "date-fns";
 import Button from "./Button";
 
-export default function HabbitList() {
-    const habbits = [
-        { id: "1", name: "Habit 1" },
-    ];
+export type Habbit = {
+    id: string,
+    name: string,
+    completions: Date[],
+}
+type HabbitListProps = {
+    habbits: Habbit[],
+    toggleHabbit: (id: string, date: Date) => void,
+    removeHabbit: (id: string) => void,
+}
 
+export default function HabbitList({ habbits, toggleHabbit, removeHabbit }: HabbitListProps) {
     if (habbits.length === 0) {
         return (
             <p className="text-center text-zinc-500 py-12">
@@ -16,19 +23,18 @@ export default function HabbitList() {
 
     return <div className="flex flex-col gap-3">
         {habbits.map(habbit => (
-            <HabbitItem key={habbit.id} habbit={habbit} />
+            <HabbitItem key={habbit.id} habbit={habbit} toggleHabbit={toggleHabbit} removeHabbit={removeHabbit} />
         ))}
     </div>
 }
 
 type HabbitItemProps = {
-    habbit: {
-        id: string;
-        name: string;
-    },
+    habbit: Habbit,
+    toggleHabbit: (id: string, date: Date) => void,
+    removeHabbit: (id: string) => void,
 }
 
-function HabbitItem({ habbit }: HabbitItemProps) {
+function HabbitItem({ habbit, toggleHabbit, removeHabbit }: HabbitItemProps) {
     const visibleDates = eachDayOfInterval({ start: startOfWeek(new Date()), end: endOfWeek(new Date()) });
 
     return <div className="rounded-xl bg-zinc-800 p-4 flex flex-col gap-3">
@@ -43,11 +49,21 @@ function HabbitItem({ habbit }: HabbitItemProps) {
                     3
                 </span>
             </div>
-            <Button variant="ghost-destructive" className="text-sm">Delete</Button>
+            <Button
+                variant="ghost-destructive"
+                className="text-sm"
+                onClick={() => removeHabbit(habbit.id)}
+            >Delete</Button>
         </div>
         <div className="flex gap-1.5">
             {visibleDates.map(date => (
-                <Button key={date.toISOString()} disabled={isFuture(date)} className="flex flex-1 flex-col items-center gap-0.5 rounded-lg text-xs">
+                <Button
+                    key={date.toISOString()}
+                    disabled={isFuture(date)}
+                    variant={habbit.completions.some(d => isSameDay(date, d)) ? "primary" : "secondary"}
+                    onClick={() => toggleHabbit(habbit.id, date)}
+                    className="flex flex-1 flex-col items-center gap-0.5 rounded-lg text-xs"
+                >
                     <span className="font-medium">{format(date, "EEE")}</span>
                     <span className="text-zinc-400 text-sm">{format(date, "d")}</span>
                 </Button>
