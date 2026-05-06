@@ -1,10 +1,16 @@
+import { isToday } from "date-fns";
+import { useHabbits } from "../context/useHabbit";
 import Button from "./Button";
 
 export default function Header() {
+    const { habbits } = useHabbits();
+    const doneToday = habbits.filter(habbit => habbit.completions.some(d => isToday(d))).length;
+    const total = habbits.length;
+
     return <header className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
             <h1 className="text-3xl font-bold">Habbit Tracker</h1>
-            <span className="text-zinc-400 text-sm">1 / 1 done today</span>
+            <span className="text-zinc-400 text-sm">{doneToday} / {total} done today</span>
         </div>
         <div className="flex flex-col gap-1">
             <span className="text-zinc-400 text-sm">6 avril - 12 avril</span>
