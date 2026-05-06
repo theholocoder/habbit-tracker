@@ -1,9 +1,13 @@
-import { eachDayOfInterval, endOfWeek, format, isFuture, isSameDay, startOfWeek, subDays } from "date-fns";
+import { format, isFuture, isSameDay, subDays } from "date-fns";
 import Button from "./Button";
 import { useHabbits } from "../context/useHabbit";
 import type { Habbit } from "../models/habbit";
 
-export default function HabbitList() {
+type HabbitListProps = {
+    visibleDates: Date[],
+}
+
+export default function HabbitList({ visibleDates }: HabbitListProps) {
     const { habbits } = useHabbits();
 
     if (habbits.length === 0) {
@@ -16,22 +20,18 @@ export default function HabbitList() {
 
     return <div className="flex flex-col gap-3">
         {habbits.map(habbit => (
-            <HabbitItem key={habbit.id} habbit={habbit} />
+            <HabbitItem key={habbit.id} habbit={habbit} visibleDates={visibleDates} />
         ))}
     </div>
 }
 
 type HabbitItemProps = {
     habbit: Habbit,
+    visibleDates: Date[],
 }
 
-function HabbitItem({ habbit }: HabbitItemProps) {
+function HabbitItem({ habbit, visibleDates }: HabbitItemProps) {
     const { toggleHabbit, removeHabbit } = useHabbits();
-
-    const visibleDates = eachDayOfInterval({
-        start: startOfWeek(new Date(), { weekStartsOn: 1 }),
-        end: endOfWeek(new Date(), { weekStartsOn: 1 })
-    });
 
     function getStreak(completions: Date[]) {
         let streak = 0;

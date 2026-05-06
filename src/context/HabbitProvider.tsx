@@ -1,14 +1,15 @@
-import { useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import type { Habbit } from "../models/habbit";
 import { isSameDay } from "date-fns";
 import { HabbitContext } from "./useHabbit";
+import useLocalStorage from "../hooks/useLocalStorage";
 
 type HabbitProviderProps = {
     children: ReactNode,
 }
 
 export default function HabbitProvider({ children }: HabbitProviderProps) {
-    const [habbits, setHabbits] = useState<Habbit[]>([]);
+    const [habbits, setHabbits] = useLocalStorage<Habbit[]>("habbits", []);
 
     function addHabbit(name: string) {
         setHabbits(habbits => [...habbits, { id: crypto.randomUUID(), name, completions: [] }]);
