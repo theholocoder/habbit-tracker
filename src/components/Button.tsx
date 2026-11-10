@@ -17,7 +17,7 @@ export default function Button({ variant = "primary", className, ...props }: But
     />
 }
 
-function getVariantStyles(variant: ButtonProps["variant"]) {
+function getVariantStyles(variant: NonNullable<ButtonProps["variant"]>) {
     switch (variant) {
         case "primary":
             return "bg-violet-600 hover:bg-violet-500";
